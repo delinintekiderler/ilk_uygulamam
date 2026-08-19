@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "713937305761",
+    "project_id": "partner-takip",
+    "storage_bucket": "partner-takip.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:713937305761:android:ff36c6f0d37c6eba1ab0e0",
+        "android_client_info": {
+          "package_name": "com.example.ilk_uygulamam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdHAyq6dd9mG7ugX2GSDMN4yEGddwg7w0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
