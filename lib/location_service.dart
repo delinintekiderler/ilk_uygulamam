@@ -165,4 +165,41 @@ class LocationService {
 
     return controller.stream;
   }
+
+  // ============================================================
+  // EŞLEŞMEYİ İPTAL ET
+  // ============================================================
+  // Hem kendi hem partnerin kaydındaki partnerId alanını temizler.
+  // Kendi kayıt bulunamazsa (örn. elle silinmişse) hata fırlatmadan devam eder.
+  Future<void> unpairFromPartner() async {
+    final myId = PbClient.currentUserId;
+    if (myId == null) return;
+
+    final partnerId = getPartnerId();
+
+    try {
+      await PbClient.pb.collection('users').update(myId, body: {
+        'partnerId': null,
+      });
+    } catch (e) {
+      debugPrint('Kendi eşleşme kaydı temizlenemedi: $e');
+    }
+
+    if (partnerId != null) {
+      try {
+        await PbClient.pb.collection('users').update(partnerId, body: {
+          'partnerId': null,
+        });
+      } catch (e) {
+        debugPrint('Partnerin eşleşme kaydı temizlenemedi: $e');
+      }
+    }
+
+    // Kendi auth kaydını da tazele ki getPartnerId() artık null dönsün.
+    try {
+      await PbClient.pb.collection('users').authRefresh();
+    } catch (e) {
+      debugPrint('Auth tazeleme hatası: $e');
+    }
+  }
 }

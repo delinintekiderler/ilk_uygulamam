@@ -9,6 +9,7 @@ import 'location_service.dart';
 import 'chat_service.dart';
 import 'chat_page.dart';
 import 'pb_client.dart';
+import 'pairing_page.dart';
 
 class StatusPage extends StatefulWidget {
   const StatusPage({super.key});
@@ -38,6 +39,39 @@ class _StatusPageState extends State<StatusPage> {
       _partnerId = partnerId;
       _isLoading = false;
     });
+  }
+
+  Future<void> _showUnpairConfirmation() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eşleşmeyi iptal et'),
+        content: const Text(
+          'Partnerinle olan bağlantın kaldırılacak. Konum, pil ve sohbet paylaşımı duracak. Emin misin?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Vazgeç'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.dangerRose),
+            child: const Text('Eşleşmeyi iptal et'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    await _locationService.unpairFromPartner();
+
+    if (mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const PairingPage()),
+      );
+    }
   }
 
   @override
@@ -95,6 +129,26 @@ class _StatusPageState extends State<StatusPage> {
             },
           ),
           const SizedBox(width: 8),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'unpair') {
+                _showUnpairConfirmation();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'unpair',
+                child: Row(
+                  children: [
+                    Icon(Icons.link_off, color: AppColors.dangerRose, size: 20),
+                    SizedBox(width: 10),
+                    Text('Eşleşmeyi iptal et'),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       body: StreamBuilder<RecordModel>(
